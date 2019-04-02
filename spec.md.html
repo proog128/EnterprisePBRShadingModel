@@ -33,13 +33,26 @@ f_r(\mathbf{v},\mathbf{l}) &=& M_r(\mathbf{v},\mathbf{l}) F(\mathbf{h}_r \cdot \
 f_t(\mathbf{v},\mathbf{l}) &=& \rho_t M_t(\mathbf{v},\mathbf{l}') (1 - F(\mathbf{h}_t \cdot \mathbf{v}))
 \end{eqnarray}
 
-with $\mathbf{h}_r = \frac{\mathbf{l} + \mathbf{v}}{\lVert\mathbf{l} + \mathbf{v}\rVert}$, $\mathbf{h}_t = \frac{\mathbf{l'} + \mathbf{v}}{\lVert\mathbf{l'} + \mathbf{v}\rVert}$ and $\mathbf{l}' = \mathbf{l} + 2 \mathbf{n} (-\mathbf{l} \cdot \mathbf{n})$ to flip the light direction from lower to upper hemisphere in order to be able to reuse the microfacet reflection function for transmission.
+with half-vectors
+
+\begin{eqnarray}
+\mathbf{h}_r &=& \frac{\mathbf{l} + \mathbf{v}}{\lVert\mathbf{l} + \mathbf{v}\rVert} \\
+\mathbf{h}_t &=& 
+\begin{cases}
+\frac{\mathbf{l'} + \mathbf{v}}{\lVert\mathbf{l'} + \mathbf{v}\rVert} & \text{ if thin-walled} \\
+\frac{-\mathbf{l} \, \eta_t - \mathbf{v} \, \eta_i}{\lVert -\mathbf{l} \, \eta_t - \mathbf{v} \, \eta_i \rVert} & \text{ otherwise}
+\end{cases}
+\end{eqnarray}
+
+and $\mathbf{l}' = \mathbf{l} + 2 \mathbf{n} (-\mathbf{l} \cdot \mathbf{n})$ if thin-walled to flip the light direction from lower to upper hemisphere in order to be able to reuse the microfacet reflection function for transmission.
+
+The index of refraction of the media on the incident and transmitted side of the surface is denoted by $\eta_i$ and $\eta_t$, respectively. It has to be properly set up by the renderer from the material's index of refraction $\eta$.
 
 ### Reflection and Transmission Components
 
 Reflection and transmission are based on microfacet BSDFs [#Wal07]. An additional energy compensation term $M_{r,ms}(\mathbf{v},\mathbf{l})\,F_{ms}$ for reflection makes the microfacet BRDF energy preserving by approximating the energy from multiple scattering between microfacets, an effect that gets stronger the higher the roughness of the surface is.
 
-The roughness $(r_u, r_v)$ is squared to make it perceptually more linear. The index of refraction of the media on the incident and transmitted side of the surface is denoted by $\eta_i$ and $\eta_t$, respectively.
+The roughness $(r_u, r_v)$ is squared to make it perceptually more linear.
 
 \begin{eqnarray}
 M_r(\mathbf{v},\mathbf{l}) &=& \frac{D(\mathbf{h},r_u^2,r_v^2) G(\mathbf{v},\mathbf{l},r_u^2,r_v^2)}{4 (\mathbf{v} \cdot \mathbf{n}) (\mathbf{l} \cdot \mathbf{n})}\\
