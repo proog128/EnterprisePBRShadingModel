@@ -29,8 +29,8 @@ The BSDFs are defined in the following way:
 
 \begin{eqnarray}
 f_d(\mathbf{v},\mathbf{l}) &=& \rho_d B(\mathbf{v}, \mathbf{l}) \\
-f_r(\mathbf{v},\mathbf{l}) &=& M_r(\mathbf{v},\mathbf{l}) F(\mathbf{h}_r \cdot \mathbf{v}) + M_{r,ms}(\mathbf{v},\mathbf{l}) F_{ms} \\
-f_t(\mathbf{v},\mathbf{l}) &=& \rho_t M_t(\mathbf{v},\mathbf{l}') (1 - F(\mathbf{h}_t \cdot \mathbf{v}))
+f_r(\mathbf{v},\mathbf{l}) &=& M_r(\mathbf{v},\mathbf{l}) F(\mathbf{h}_r \cdot \mathbf{v}, \rho_{s,r,0}, \rho_{s,r,90}) + M_{r,ms}(\mathbf{v},\mathbf{l}) F_{ms} \\
+f_t(\mathbf{v},\mathbf{l}) &=& \rho_t M_t(\mathbf{v},\mathbf{l}') (1 - F(\mathbf{h}_t \cdot \mathbf{v}, \rho_{s,t,0}, \rho_{s,t,90}))
 \end{eqnarray}
 
 with half-vectors
@@ -76,12 +76,12 @@ To allow for anisotropic materials we derive roughnesses in tangent ($r_u$) and 
 For performance reasons Schlick's Fresnel approximation is used. It is a lot easier to compute than the full Fresnel equations.
 
 \begin{eqnarray}
-F(\theta) &=&
+F(\theta, f_0, f_{90}) &=&
 \begin{cases}
-\rho_{s,r,0} + (\rho_{s,r,90} - \rho_{s,r,0}) (1 - |\cos\theta|)^5 & \text{if }
+f_0 + (f_{90} - f_0) (1 - |\cos\theta|)^5 & \text{if }
 \eta_t >= \eta_i
  \\
-\rho_{s,r,0} + (\rho_{s,r,90} - \rho_{s,r,0}) (1 - |\cos\theta_t|)^5 & \text{if }
+f_0 + (f_{90} - f_0) (1 - |\cos\theta_t|)^5 & \text{if }
 \eta_t < \eta_i \land \sin^2\theta_t < 1
  \\
 1 & \text{if }
@@ -171,13 +171,15 @@ with $E_0 = F_0 \rho_{s,\text{max}}$, where $\rho_{s,\text{max}}$ denotes the ma
 
 ### Parameters
 
-In order to simplify usage of the model and to ensure energy conservation, the weights $\rho_d$, $\rho_{s,r,0}$, $\rho_{s,r,90}$, and $\rho_t$ of the individual components of the model are not directly given by the user, but instead computed from a set of user parameters $\rho$, $\rho_s$, $m$, $t$, $s$ as follows:
+In order to simplify usage of the model and to ensure energy conservation, the weights $\rho_d$, $\rho_{s,r,0}$, $\rho_{s,r,90}$, $\rho_{s,t,0}$, $\rho_{s,t,90}$, and $\rho_t$ of the individual components of the model are not directly given by the user, but instead computed from a set of user parameters $\rho$, $\rho_s$, $m$, $t$, $s$ as follows:
 
 \begin{eqnarray}
 \rho_d &=& \rho (1-m) (1-t) \\
 \rho_t &=& \rho (1-m) t \\
 \rho_{s,r,0} &=& (1-m) F_0 s \rho_s + m \rho \\
 \rho_{s,r,90} &=& (1-m) s + m \\
+\rho_{s,t,0} &=& F_0 s \rho_s \\
+\rho_{s,t,90} &=& s \\
 \end{eqnarray}
 
 where $F_0 = \left(\frac{\eta_i - \eta_o}{\eta_i + \eta_o}\right)^2$.
